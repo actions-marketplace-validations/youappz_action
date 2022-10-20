@@ -68,6 +68,7 @@ runs:
         cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
 
     - name: Install Youappz Cli
+      shell: "bash"
       run: npm install --global @youappz/cli@latest
 
     - name: Cache dependencies
@@ -93,6 +94,7 @@ runs:
         $node_pm run build --if-present
 
     - name: Deploy Project Artifacts to Youappz
+      shell: "bash"
       run: |
         cd ${{ inputs.path }}
         appz deploy -d dist
