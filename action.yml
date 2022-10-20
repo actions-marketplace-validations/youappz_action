@@ -1,5 +1,5 @@
-name: "Astro Deploy"
-description: "A composite action that prepares your Astro site to be deployed to GitHub Pages"
+name: "Youappz Deploy"
+description: "A composite action that prepares your Jamstack site to be deployed to Youappz platform"
 branding:
   icon: "box"
   color: "orange"
@@ -19,7 +19,17 @@ inputs:
 
 runs:
   using: composite
-  steps:
+  steps:    
+    - name: check is APPZ_API_KEY exists
+      id: apikey
+      shell: "bash"      
+      run: |
+        if [[ "$APPZ_API_KEY" == '' ]]; then
+          echo "secret APPZ_API_KEY has not been set"
+          echo please go to \"settings \> secrets \> actions\" to create it
+          exit 1          
+        fi
+
     - name: Check lockfiles
       id: lockfile
       shell: "bash"
@@ -51,14 +61,25 @@ runs:
       with:
         version: 7.x.x
 
-    - name: Setup Node
+    - name: Setup Node        
       uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+    
+    - name: Install Youappz Cli
+      run: npm install --global @youappz/cli@latest
+
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
       with:
-        node-version: ${{ inputs.node-version }}
-        cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+        path: "${{ inputs.path }}/node_modules"
+        key: modules-${{ hashFiles('package-lock.json') }}
 
     - name: Install
       shell: "bash"
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         cd ${{ inputs.path }}
         $node_pm install
@@ -69,9 +90,9 @@ runs:
         PACKAGE_MANAGER: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
       run: |
         cd ${{ inputs.path }}
-        $node_pm run build
+        $node_pm run build --if-present
 
-    - name: Upload Pages Artifact
-      uses: actions/upload-pages-artifact@v1
-      with:
-        path: "${{ inputs.path }}/dist/"
+    - name: Deploy Project Artifacts to Youappz
+      run: |
+        cd ${{ inputs.path }}
+        appz deploy -d dist
