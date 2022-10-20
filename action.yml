@@ -19,10 +19,10 @@ inputs:
 
 runs:
   using: composite
-  steps:    
+  steps:
     - name: check is APPZ_API_KEY exists
       id: apikey
-      shell: "bash"      
+      shell: "bash"
       run: |
         if [[ "$APPZ_API_KEY" == '' ]]; then
           echo "secret APPZ_API_KEY has not been set"
@@ -61,12 +61,12 @@ runs:
       with:
         version: 7.x.x
 
-    - name: Setup Node        
+    - name: Setup Node
       uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
-    
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+
     - name: Install Youappz Cli
       run: npm install --global @youappz/cli@latest
 
