@@ -66,12 +66,10 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
-      shell: "bash"
-    - run: npx ci
 
-    # - name: Install Youappz Cli
-    #   shell: "bash"
-    #   run: npm install --global @youappz/cli@latest
+    - name: Install Packages
+      shell: "bash"
+      run: npx ci
 
     # - name: Cache dependencies
     #   id: cache
