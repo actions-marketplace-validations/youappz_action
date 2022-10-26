@@ -65,7 +65,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node-version }}
-        cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+        cache: appz-${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
 
     - name: Install Packages
       shell: "bash"
