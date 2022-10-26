@@ -6,8 +6,6 @@ For more information, please see our complete deployment guide—[Deploy your As
 
 ## Usage
 
-> **Note**: Want to get started even faster? Create a repository from our official [GitHub Pages template](https://github.com/withastro/github-pages)!
-
 ### Inputs
 
 - `path` - Optional: the root location of your project inside the repository.
@@ -18,7 +16,7 @@ For more information, please see our complete deployment guide—[Deploy your As
 
 #### Build and Deploy to Youyappz
 
-Create a file at `.github/workflows/deploy.yml` with the following content.
+Create a file at `.github/workflows/youappz.yml` with the following content.
 
 ```yml
 name: Deploy to Youappz
@@ -32,26 +30,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v3
       - name: Install, build, and upload your site output
-        uses: youappz/action@v0
+        uses: youappz/action@v1
         # with:
         # path: . # The root location of your project inside the repository. (optional)
         # node-version: 16 # The specific version of Node that should be used to build your site. Defaults to 16. (optional)
         # package-manager: yarn # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
 ```

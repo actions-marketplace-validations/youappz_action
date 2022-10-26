@@ -66,24 +66,25 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+    - run: npx ci
 
-    - name: Install Youappz Cli
-      shell: "bash"
-      run: npm install --global @youappz/cli@latest
+    # - name: Install Youappz Cli
+    #   shell: "bash"
+    #   run: npm install --global @youappz/cli@latest
 
-    - name: Cache dependencies
-      id: cache
-      uses: actions/cache@v3
-      with:
-        path: "${{ inputs.path }}/node_modules"
-        key: modules-${{ hashFiles('package-lock.json') }}
+    # - name: Cache dependencies
+    #   id: cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: "${{ inputs.path }}/node_modules"
+    #     key: modules-${{ hashFiles('package-lock.json') }}
 
-    - name: Install
-      shell: "bash"
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: |
-        cd ${{ inputs.path }}
-        $node_pm install
+    # - name: Install
+    #   shell: "bash"
+    #   if: steps.cache.outputs.cache-hit != 'true'
+    #   run: |
+    #     cd ${{ inputs.path }}
+    #     npx ci
 
     - name: Build
       shell: "bash"
@@ -97,4 +98,10 @@ runs:
       shell: "bash"
       run: |
         cd ${{ inputs.path }}
-        appz deploy -d dist
+        npx @youappz/cli deploy -d dist
+- uses: actions/setup-node@v3
+  with:
+    node-version: '16'
+    check-latest: true
+- run: npm ci
+- run: npm test
