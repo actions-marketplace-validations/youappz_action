@@ -66,6 +66,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+      shell: "bash"
     - run: npx ci
 
     # - name: Install Youappz Cli
