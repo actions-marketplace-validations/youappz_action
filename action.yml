@@ -36,6 +36,7 @@ runs:
       env:
         INPUT_PM: ${{ inputs.package-manager }}
       run: |
+        echo "build_dir=dist" >> $GITHUB_ENV
         len=`echo $INPUT_PM | wc -c`
         if [ $len -gt 1 ]; then
             echo "::set-output name=PACKAGE_MANAGER::$INPUT_PM"
@@ -50,9 +51,10 @@ runs:
             echo "::set-output name=PACKAGE_MANAGER::npm"
             echo "node_pm=npm" >> $GITHUB_ENV
         else
-            echo "No lockfile found.
-        Please specify your preferred \"package-manager\" in the action configuration."
-            exit 1
+            echo "::set-output name=PACKAGE_MANAGER::none"
+            echo "node_pm=none" >> $GITHUB_ENV
+            echo "build_dir=." >> $GITHUB_ENV
+
         fi
 
     - name: Setup PNPM
@@ -65,9 +67,10 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node-version }}
-        cache: appz-${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
+        cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
 
     - name: Install Packages
+      if: ${{ steps.lockfile.outputs.PACKAGE_MANAGER != 'none' }}
       shell: "bash"
       run: npx ci
 
@@ -86,6 +89,7 @@ runs:
     #     npx ci
 
     - name: Build
+      if: ${{ steps.lockfile.outputs.PACKAGE_MANAGER != 'none' }}
       shell: "bash"
       env:
         PACKAGE_MANAGER: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
@@ -97,4 +101,4 @@ runs:
       shell: "bash"
       run: |
         cd ${{ inputs.path }}
-        npx @youappz/cli deploy -d dist
+        npx @youappz/cli deploy -d $build_dir
