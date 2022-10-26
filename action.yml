@@ -37,6 +37,7 @@ runs:
         INPUT_PM: ${{ inputs.package-manager }}
       run: |
         echo "build_dir=dist" >> $GITHUB_ENV
+        echo "framework=ssg" >> $GITHUB_ENV
         len=`echo $INPUT_PM | wc -c`
         if [ $len -gt 1 ]; then
             echo "::set-output name=PACKAGE_MANAGER::$INPUT_PM"
@@ -51,8 +52,8 @@ runs:
             echo "::set-output name=PACKAGE_MANAGER::npm"
             echo "node_pm=npm" >> $GITHUB_ENV
         else
-            echo "::set-output name=PACKAGE_MANAGER::none"
-            echo "node_pm=none" >> $GITHUB_ENV
+            echo "::set-output name=PACKAGE_MANAGER::npm"
+            echo "framework=html" >> $GITHUB_ENV
             echo "build_dir=." >> $GITHUB_ENV
 
         fi
@@ -70,7 +71,7 @@ runs:
         cache: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
 
     - name: Install Packages
-      if: ${{ steps.lockfile.outputs.PACKAGE_MANAGER != 'none' }}
+      if: ${{ framework != 'html' }}
       shell: "bash"
       run: npx ci
 
@@ -89,7 +90,7 @@ runs:
     #     npx ci
 
     - name: Build
-      if: ${{ steps.lockfile.outputs.PACKAGE_MANAGER != 'none' }}
+      if: ${{ framework != 'html' }}
       shell: "bash"
       env:
         PACKAGE_MANAGER: ${{ steps.lockfile.outputs.PACKAGE_MANAGER }}
